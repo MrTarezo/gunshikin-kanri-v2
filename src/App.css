@@ -1,0 +1,47 @@
+/* App.css - TailwindCSS compatible styles */
+
+/* Remove default margins and paddings, TailwindCSS will handle these */
+#root {
+  /* Let TailwindCSS handle the layout */
+}
+
+/* Custom animations and utilities that extend TailwindCSS */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out;
+}
+
+/* PWA specific styles */
+.safe-area-inset-top {
+  padding-top: max(1rem, env(safe-area-inset-top));
+}
+
+.safe-area-inset-bottom {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  .mobile-scroll {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Custom utilities for the military theme */
+.military-gradient {
+  background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+}
+
+.receipt-shadow {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
