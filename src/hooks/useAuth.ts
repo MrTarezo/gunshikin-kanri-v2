@@ -42,19 +42,17 @@ export function useAuth() {
     email: '',
   })
   
-  // 開発モード強制時は開発用の結果を返す
-  if (useDevMode) {
-    console.log('🚀 開発モード: モック認証を使用')
-    return devAuthResult
-  }
-
   // 初期認証状態の確認
   useEffect(() => {
-    checkAuthState()
+    if (!useDevMode) {
+      checkAuthState()
+    }
   }, [])
 
   // Amplify Hub リスナー（認証状態の変更を監視）
   useEffect(() => {
+    if (useDevMode) return
+    
     const hubListener = (data: unknown) => {
       const { payload } = data as { payload: { event: string } }
       
@@ -88,6 +86,12 @@ export function useAuth() {
       unsubscribe()
     }
   }, [])
+  
+  // 開発モード強制時は開発用の結果を返す
+  if (useDevMode) {
+    console.log('🚀 開発モード: モック認証を使用')
+    return devAuthResult
+  }
 
   const checkAuthState = async () => {
     try {
