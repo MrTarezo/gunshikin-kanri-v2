@@ -31,12 +31,9 @@ interface SignInParams {
  * Amplify Cognitoを使用（開発時は環境変数でモック切り替え可能）
  */
 export function useAuth() {
-  // 開発モード強制時は useDevAuth を使用
-  if (useDevMode) {
-    console.log('🚀 開発モード: モック認証を使用')
-    return useDevAuth()
-  }
-
+  // すべてのフックを最初に宣言（React Hooksのルール）
+  const devAuthResult = useDevAuth()
+  
   const [authState, setAuthState] = useState<AuthState>({
     user: null,
     isLoading: true,
@@ -44,6 +41,12 @@ export function useAuth() {
     nickname: '',
     email: '',
   })
+  
+  // 開発モード強制時は開発用の結果を返す
+  if (useDevMode) {
+    console.log('🚀 開発モード: モック認証を使用')
+    return devAuthResult
+  }
 
   // 初期認証状態の確認
   useEffect(() => {

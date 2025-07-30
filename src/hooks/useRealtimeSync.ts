@@ -34,12 +34,6 @@ export function useRealtimeSync() {
   const subscriptionsRef = useRef<unknown[]>([])
   const offlineQueueRef = useRef<unknown[]>([])
   
-  // 開発モード強制時は開発用の結果を返す
-  if (useDevMode) {
-    console.log('🚀 開発モード: モックリアルタイム同期を使用')
-    return devSyncResult
-  }
-  
   const forceSync = useCallback(async () => {
     try {
       setSyncState(prev => ({ ...prev, error: null }))
@@ -138,6 +132,12 @@ export function useRealtimeSync() {
       })
     }
   }, [])
+  
+  // 開発モード強制時は開発用の結果を返す
+  if (useDevMode) {
+    console.log('🚀 開発モード: モックリアルタイム同期を使用')
+    return devSyncResult
+  }
   
   return {
     syncState,
