@@ -12,7 +12,15 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,jpg,jpeg,webp}'],
+        globPatterns: ['**/*.{js,css,html,ico,svg}'],
+        // 大きな画像ファイルを除外（背景画像など）
+        globIgnores: [
+          '**/img/haikei.png',
+          '**/img/背景.png',
+          '**/img/gunshikin-icon.png',
+          '**/img/gunshikin-icon2.png'
+        ],
+        maximumFileSizeToCacheInBytes: 3 * 1024 * 1024, // 3MB
         // AWS Cognito とリアルタイムサービスを除外
         navigateFallbackDenylist: [
           /^https:\/\/cognito-idp\..*\.amazonaws\.com/,
