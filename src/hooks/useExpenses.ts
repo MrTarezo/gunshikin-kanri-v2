@@ -75,11 +75,11 @@ export function useExpenses() {
         
         if (errors && errors.length > 0) {
           console.error('💰 データ取得GraphQLエラー:', errors)
-          throw new Error(`GraphQL errors: ${errors.map(e => e.message).join(', ')}`)
+          throw new Error(`GraphQL errors: ${errors.map((e: any) => e.message).join(', ')}`)
         }
 
         // 日付でソート（新しい順）
-        const sortedExpenses = data.sort((a, b) => 
+        const sortedExpenses = data.sort((a: any, b: any) => 
           new Date(b.date).getTime() - new Date(a.date).getTime()
         )
 
@@ -209,7 +209,7 @@ export function useExpenses() {
         
         if (errors && errors.length > 0) {
           console.error('💰 GraphQLエラー:', errors)
-          throw new Error(`GraphQL errors: ${errors.map(e => e.message).join(', ')}`)
+          throw new Error(`GraphQL errors: ${errors.map((e: any) => e.message).join(', ')}`)
         }
 
         if (!newExpense) {
@@ -292,7 +292,7 @@ export function useExpenses() {
         
         if (errors && errors.length > 0) {
           console.error('💰 削除GraphQLエラー:', errors)
-          throw new Error(`GraphQL errors: ${errors.map(e => e.message).join(', ')}`)
+          throw new Error(`GraphQL errors: ${errors.map((e: any) => e.message).join(', ')}`)
         }
 
         setExpenses(prev => prev.filter(e => e.id !== id))
@@ -362,7 +362,7 @@ export function useExpenses() {
 
         if (errors && errors.length > 0) {
           console.error('💰 更新エラー:', errors)
-          throw new Error(`GraphQL errors: ${errors.map(e => e.message).join(', ')}`)
+          throw new Error(`GraphQL errors: ${errors.map((e: any) => e.message).join(', ')}`)
         }
 
         if (!updatedExpense) {

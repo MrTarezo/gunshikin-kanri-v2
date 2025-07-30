@@ -52,11 +52,11 @@ export function useTodos() {
       
       if (errors && errors.length > 0) {
         console.error('⚔️ データ取得GraphQLエラー:', errors)
-        throw new Error(`GraphQL errors: ${errors.map(e => e.message).join(', ')}`)
+        throw new Error(`GraphQL errors: ${errors.map((e: any) => e.message).join(', ')}`)
       }
 
       // 既存スキーマから新スキーマへの変換
-      const enhancedTodos: EnhancedTodo[] = data.map(todo => ({
+      const enhancedTodos: EnhancedTodo[] = data.map((todo: any) => ({
         id: todo.id || '',
         title: todo.title || '',
         priority: 'medium' as const, // デフォルト値（後で拡張可能）

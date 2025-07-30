@@ -6,19 +6,22 @@ import tailwindcss from '@tailwindcss/vite'
 import path from 'path'
 
 export default defineConfig({
+  define: {
+    global: 'globalThis',
+  },
   plugins: [
     react(),
     tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,svg}'],
+        globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
         // 大きな画像ファイルを除外（背景画像など）
         globIgnores: [
-          '**/img/haikei.png',
-          '**/img/背景.png',
-          '**/img/gunshikin-icon.png',
-          '**/img/gunshikin-icon2.png'
+          'img/haikei.png',
+          'img/背景.png',  
+          'img/gunshikin-icon.png',
+          'img/gunshikin-icon2.png'
         ],
         maximumFileSizeToCacheInBytes: 3 * 1024 * 1024, // 3MB
         // AWS Cognito とリアルタイムサービスを除外
@@ -184,10 +187,20 @@ export default defineConfig({
         assetFileNames: 'assets/[name]-[hash].[ext]',
         manualChunks: {
           vendor: ['react', 'react-dom'],
-          aws: ['aws-amplify', '@aws-amplify/backend'],
+          aws: ['aws-amplify'],
           ui: ['lucide-react'],
         },
       },
     },
+  },
+  optimizeDeps: {
+    exclude: ['@aws-amplify/backend'],
+    include: [
+      'crypto-js',
+      '@aws-amplify/core',
+      '@aws-amplify/auth', 
+      '@aws-amplify/storage',
+      '@aws-amplify/api-graphql'
+    ]
   },
 })

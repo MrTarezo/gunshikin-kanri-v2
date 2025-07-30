@@ -91,12 +91,12 @@ export function useRealtimeSync() {
       // Expense Subscription
       if (callbacks?.onExpenseChange) {
         const expenseSubscription = client.models.Expense.observeQuery().subscribe({
-          next: ({ items }) => {
+          next: ({ items }: any) => {
             console.log('💰 Expenseデータ更新:', items.length)
             setSyncState(prev => ({ ...prev, lastSync: new Date() }))
             callbacks.onExpenseChange?.(items)
           },
-          error: (error) => {
+          error: (error: any) => {
             console.error('Expense subscriptionエラー:', error)
             setSyncState(prev => ({ ...prev, error: 'Expense同期エラー' }))
           }
@@ -107,12 +107,12 @@ export function useRealtimeSync() {
       // Todo Subscription  
       if (callbacks?.onTodoChange) {
         const todoSubscription = client.models.Todo.observeQuery().subscribe({
-          next: ({ items }) => {
+          next: ({ items }: any) => {
             console.log('⚔️ Todoデータ更新:', items.length)
             setSyncState(prev => ({ ...prev, lastSync: new Date() }))
             callbacks.onTodoChange?.(items)
           },
-          error: (error) => {
+          error: (error: any) => {
             console.error('Todo subscriptionエラー:', error)
             setSyncState(prev => ({ ...prev, error: 'Todo同期エラー' }))
           }

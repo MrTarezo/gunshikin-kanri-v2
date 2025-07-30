@@ -23,7 +23,7 @@ const schema = a.schema({
       settlementMonth: a.string(),
       category: a.string(),
     })
-    .authorization((allow) => [allow.owner()]),
+    .authorization((allow: any) => [allow.owner()]),
 
   // 既存 Todo テーブルと完全に同じ構造  
   Todo: a
@@ -37,7 +37,7 @@ const schema = a.schema({
       createdAt: a.datetime(),
       updatedAt: a.datetime(),
     })
-    .authorization((allow) => [allow.owner()]),
+    .authorization((allow: any) => [allow.owner()]),
 
   // 既存 FridgeItem テーブルと完全に同じ構造
   FridgeItem: a
@@ -49,7 +49,7 @@ const schema = a.schema({
       isUrgent: a.boolean(), // 既存フィールド
       image: a.string(), // 既存は単一文字列
     })
-    .authorization((allow) => [allow.owner()]),
+    .authorization((allow: any) => [allow.owner()]),
 
   // 既存 Receipt テーブルと完全に同じ構造
   Receipt: a
@@ -58,7 +58,7 @@ const schema = a.schema({
       imageKey: a.string().required(),
       uploadedAt: a.datetime().required(),
     })
-    .authorization((allow) => [allow.owner()]),
+    .authorization((allow: any) => [allow.owner()]),
 
   // ユーザープロフィール（新規追加のみ）
   UserProfile: a
@@ -70,7 +70,7 @@ const schema = a.schema({
       createdAt: a.datetime(),
       updatedAt: a.datetime(),
     })
-    .authorization((allow) => [allow.owner()]),
+    .authorization((allow: any) => [allow.owner()]),
 })
 
 export type Schema = ClientSchema<typeof schema>

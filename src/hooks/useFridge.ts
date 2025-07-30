@@ -69,11 +69,11 @@ export function useFridge() {
       
       if (errors && errors.length > 0) {
         console.error('🧊 データ取得GraphQLエラー:', errors)
-        throw new Error(`GraphQL errors: ${errors.map(e => e.message).join(', ')}`)
+        throw new Error(`GraphQL errors: ${errors.map((e: any) => e.message).join(', ')}`)
       }
 
       // 既存スキーマから新スキーマへの変換
-      const enhancedItems: EnhancedFridgeItem[] = data.map(item => ({
+      const enhancedItems: EnhancedFridgeItem[] = data.map((item: any) => ({
         id: item.id || '',
         name: item.name || '',
         location: item.location || '',
@@ -161,7 +161,7 @@ export function useFridge() {
       
       if (errors && errors.length > 0) {
         console.error('🧊 作成GraphQLエラー:', errors)
-        throw new Error(`GraphQL errors: ${errors.map(e => e.message).join(', ')}`)
+        throw new Error(`GraphQL errors: ${errors.map((e: any) => e.message).join(', ')}`)
       }
 
       if (!newItem) {
@@ -280,7 +280,7 @@ export function useFridge() {
       
       if (errors && errors.length > 0) {
         console.error('🧊 削除GraphQLエラー:', errors)
-        throw new Error(`GraphQL errors: ${errors.map(e => e.message).join(', ')}`)
+        throw new Error(`GraphQL errors: ${errors.map((e: any) => e.message).join(', ')}`)
       }
 
       // ローカル状態を更新
