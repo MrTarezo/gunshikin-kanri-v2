@@ -71,10 +71,10 @@ export function DashboardPage({ onTabChange }: DashboardPageProps) {
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-2xl font-bold mb-2">
-              おかえりなさい、{nickname}指揮官！ 🪖
+              Hello、{nickname}軍曹！ 🪖
             </h2>
             <p className="text-blue-100">
-              戦略的家計管理システムの統合ダッシュボードです
+              ダッシュボードです
             </p>
             <p className="text-xs text-blue-200 mt-2">
               📊 リアルタイム更新対応

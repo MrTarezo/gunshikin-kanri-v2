@@ -70,7 +70,7 @@ export function MainApp() {
   }
 
   return (
-    <div className="min-h-screen ape-camo-realistic">
+    <div className={`min-h-screen relative ${activeTab === 'dashboard' ? 'camo-bg-image' : 'bg-gray-50'}`}>
       {/* ヘッダー */}
       <header className="command-panel shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

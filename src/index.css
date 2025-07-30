@@ -90,13 +90,37 @@
 
 /* 実際の迷彩画像を使用する場合 */
 .camo-bg-image {
-  background-image: url('/img/camo-pattern.jpg');
-  background-size: 400px 400px;
+  background-image: url('/img/haikei.png');
+  background-size: 300px 300px;
   background-repeat: repeat;
   background-attachment: fixed;
-  /* ダークオーバーレイで軍事感を強化 */
+  /* 軽いオーバーレイで読みやすさを向上 */
   background-blend-mode: multiply;
-  background-color: rgba(0, 0, 0, 0.3);
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+/* 薄い迷彩背景（カード背景用） */
+.camo-bg-subtle {
+  background-image: url('/img/haikei.png');
+  background-size: 200px 200px;
+  background-repeat: repeat;
+  background-position: center;
+  opacity: 0.05;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+}
+
+/* ヘッダー用迷彩背景 */
+.camo-header {
+  background-image: url('/img/haikei.png');
+  background-size: 150px 150px;
+  background-repeat: repeat;
+  background-blend-mode: overlay;
+  background-color: var(--military-green);
 }
 
 /* より現実的なアドベンチャー風パターン */

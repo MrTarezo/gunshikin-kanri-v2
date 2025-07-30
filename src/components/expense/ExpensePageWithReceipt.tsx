@@ -5,8 +5,9 @@ import { useExpenses } from '../../hooks/useExpenses'
 import { ExpenseFormWithReceipt } from './ExpenseFormWithReceipt'
 import { ExpenseListWithReceipt } from './ExpenseListWithReceipt'
 import { ExpenseSummary } from './ExpenseSummary'
+import { MonthlyReport } from './MonthlyReport'
 import { Button } from '../ui/button'
-import { Filter, Calendar, User, Receipt, RefreshCw, AlertCircle } from 'lucide-react'
+import { Filter, Calendar, User, RefreshCw, AlertCircle, BarChart3, X } from 'lucide-react'
 
 export function ExpensePageWithReceipt() {
   const { nickname } = useAuth()
@@ -18,16 +19,30 @@ export function ExpensePageWithReceipt() {
     updateExpense,
     deleteExpense, 
     fetchExpenses,
-    getExpenseStats,
     setError 
   } = useExpenses()
 
+  const [activeTab, setActiveTab] = useState<'current' | 'report'>('current')
   const [filter, setFilter] = useState<'all' | 'income' | 'expense' | 'with-receipt'>('all')
   const [selectedMonth, setSelectedMonth] = useState<string>('')
   const [selectedUser, setSelectedUser] = useState<string>('all')
+  
+  // レポート用の月選択状態（初期値は前月）
+  const [reportMonth, setReportMonth] = useState(() => {
+    const now = new Date()
+    const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1)
+    return lastMonth.toISOString().slice(0, 7)
+  })
 
   // エラーのクリア
   const clearError = () => setError(null)
+
+  // フィルタのリセット
+  const resetFilters = () => {
+    setFilter('all')
+    setSelectedMonth('')
+    setSelectedUser('all')
+  }
 
   // 手動リフレッシュ
   const handleRefresh = async () => {
@@ -94,7 +109,14 @@ export function ExpensePageWithReceipt() {
   const filteredExpenses = expenses.filter(expense => {
     if (filter === 'income' && expense.type !== 'income') return false
     if (filter === 'expense' && expense.type !== 'expense') return false
-    if (filter === 'with-receipt' && (!expense.receipt || expense.receipt === '')) return false
+    
+    // レシートフィルタの改善（配列と文字列の両方に対応）
+    if (filter === 'with-receipt') {
+      if (!expense.receipt) return false
+      if (typeof expense.receipt === 'string' && expense.receipt === '') return false
+      if (Array.isArray(expense.receipt) && expense.receipt.length === 0) return false
+    }
+    
     if (selectedMonth && !expense.date.startsWith(selectedMonth)) return false
     if (selectedUser !== 'all' && expense.paidBy !== selectedUser) return false
     return true
@@ -106,9 +128,6 @@ export function ExpensePageWithReceipt() {
 
   // ユニークなユーザーリストを取得
   const availableUsers = [...new Set(expenses.map(e => e.paidBy))]
-
-  // 統計情報
-  const stats = getExpenseStats(expenses)
 
   // ローディング状態
   if (isLoading && expenses.length === 0) {
@@ -159,6 +178,38 @@ export function ExpensePageWithReceipt() {
         </div>
       </div>
 
+      {/* タブナビゲーション */}
+      <div className="border-b border-gray-200">
+        <nav className="flex space-x-8">
+          <button
+            onClick={() => setActiveTab('current')}
+            className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
+              activeTab === 'current'
+                ? 'border-blue-500 text-blue-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+            }`}
+          >
+            <div className="flex items-center gap-2">
+              <Calendar className="h-4 w-4" />
+              今月の管理
+            </div>
+          </button>
+          <button
+            onClick={() => setActiveTab('report')}
+            className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
+              activeTab === 'report'
+                ? 'border-purple-500 text-purple-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+            }`}
+          >
+            <div className="flex items-center gap-2">
+              <BarChart3 className="h-4 w-4" />
+              月次レポート
+            </div>
+          </button>
+        </nav>
+      </div>
+
       {/* エラー表示 */}
       {error && (
         <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-center justify-between">
@@ -189,30 +240,11 @@ export function ExpensePageWithReceipt() {
         </div>
       )}
 
-      {/* サマリーカード */}
-      <ExpenseSummary expenses={expenses} />
-
-      {/* レシート統計 */}
-      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-200">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Receipt className="h-6 w-6 text-blue-600" />
-            <div>
-              <h3 className="font-semibold text-blue-900">📸 レシート管理統計</h3>
-              <p className="text-sm text-blue-700">
-                全{stats.totalCount}件中 {stats.withReceiptCount}件にレシート添付 
-                (計画的記録管理)
-              </p>
-            </div>
-          </div>
-          <div className="text-right">
-            <div className="text-lg font-bold text-blue-600">
-              {stats.receiptRate}%
-            </div>
-            <div className="text-xs text-blue-600">添付率</div>
-          </div>
-        </div>
-      </div>
+      {/* タブの内容 */}
+      {activeTab === 'current' ? (
+        <>
+          {/* サマリーカード */}
+          <ExpenseSummary expenses={expenses} />
 
       {/* フィルター */}
       <div className="bg-white rounded-lg border border-gray-200 p-4">
@@ -225,7 +257,7 @@ export function ExpensePageWithReceipt() {
           {/* タイプフィルター */}
           <select
             value={filter}
-            onChange={(e) => setFilter(e.target.value as any)}
+            onChange={(e) => setFilter(e.target.value as 'all' | 'income' | 'expense' | 'with-receipt')}
             className="px-3 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="all">すべて</option>
@@ -269,6 +301,19 @@ export function ExpensePageWithReceipt() {
             </select>
           </div>
 
+          {/* フィルタリセットボタン */}
+          {(filter !== 'all' || selectedMonth !== '' || selectedUser !== 'all') && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={resetFilters}
+              className="flex items-center gap-1 text-gray-600 hover:text-gray-800"
+            >
+              <X className="h-3 w-3" />
+              リセット
+            </Button>
+          )}
+
           {/* 結果表示 */}
           <div className="ml-auto text-sm text-gray-600">
             {filteredExpenses.length}件の記録
@@ -277,16 +322,26 @@ export function ExpensePageWithReceipt() {
         </div>
       </div>
 
-      {/* 支出リスト */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <ExpenseListWithReceipt 
-          expenses={filteredExpenses as any[]} 
-          onDelete={handleDeleteExpense}
-          onUpdate={updateExpense}
-          isLoading={isLoading}
+          {/* 支出リスト */}
+          <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <ExpenseListWithReceipt 
+              expenses={filteredExpenses as any[]} 
+              onDelete={handleDeleteExpense}
+              onUpdate={updateExpense}
+              isLoading={isLoading}
+            />
+          </div>
+        </>
+      ) : (
+        // 月次レポートタブ
+        <MonthlyReport 
+          expenses={expenses} 
+          targetMonth={reportMonth}
+          onMonthChange={setReportMonth}
+          selectedUser={selectedUser}
+          onUserChange={setSelectedUser}
         />
-      </div>
-
+      )}
     </div>
   )
 }

@@ -133,11 +133,6 @@ function AuthForm() {
             GUNSHIKIN-KANRI-V2
           </h1>
           <p className="text-gray-600">戦略的家計管理システム</p>
-          <div className="mt-2">
-            <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
-              📸 レシート撮影機能付き
-            </span>
-          </div>
         </div>
 
         {/* フォーム */}
@@ -320,16 +315,6 @@ function AuthForm() {
               </button>
             </div>
           )}
-        </div>
-
-        {/* 機能紹介 */}
-        <div className="mt-6 text-center text-sm text-gray-600">
-          <p className="mb-2">✨ 主要機能</p>
-          <div className="flex justify-center space-x-4">
-            <span>📸 レシート撮影</span>
-            <span>⚔️ 作戦管理</span>
-            <span>🧊 補給庫監視</span>
-          </div>
         </div>
       </div>
     </div>
