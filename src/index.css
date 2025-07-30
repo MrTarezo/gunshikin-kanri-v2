@@ -1,4 +1,128 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap');
+
+:root {
+  /* アドベンチャーテーマカラーパレット */
+  --military-dark: #2a3a2a;
+  --military-green: #4a7c59;
+  --military-olive: #7ba05b;
+  --military-khaki: #c4a570;
+  --military-red: #d2691e;
+  --military-gold: #ffd900;
+  --military-silver: #d4d4d4;
+  --military-camo-1: #5a6b5a;
+  --military-camo-2: #7a8570;
+  --military-camo-3: #9aa76a;
+  --military-warning: #ff8c42;
+  
+  /* アドベンチャーグラデーション */
+  --gradient-command: linear-gradient(135deg, var(--military-green) 0%, var(--military-olive) 100%);
+  --gradient-tactical: linear-gradient(135deg, var(--military-olive) 0%, var(--military-khaki) 100%);
+  --gradient-alert: linear-gradient(135deg, var(--military-red) 0%, var(--military-warning) 100%);
+}
+
+/* 軍事フォント設定 */
+.military-title {
+  font-family: 'Orbitron', monospace;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.military-text {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 500;
+}
+
+.military-mono {
+  font-family: 'Orbitron', monospace;
+  font-weight: 400;
+}
+
+/* 軍事風効果 */
+.tactical-border {
+  border: 2px solid var(--military-olive);
+  border-radius: 4px;
+  background: linear-gradient(45deg, transparent 0%, rgba(255,215,0,0.1) 50%, transparent 100%);
+}
+
+.command-panel {
+  background: var(--gradient-command);
+  border: 1px solid var(--military-gold);
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.tactical-button {
+  background: var(--gradient-tactical);
+  border: 1px solid var(--military-gold);
+  color: var(--military-gold);
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.tactical-button:hover {
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+  transform: translateY(-2px);
+}
+
+.alert-status {
+  background: var(--gradient-alert);
+  animation: pulse-alert 2s infinite;
+}
+
+@keyframes pulse-alert {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+/* アドベンチャー風背景 */
+.camo-bg {
+  /* フォールバック用の明るいアドベンチャー背景 */
+  background-color: #4a5d4a;
+  background-image: 
+    radial-gradient(ellipse 150px 100px at 20% 30%, #4a7c59 40%, transparent 45%),
+    radial-gradient(ellipse 200px 120px at 70% 20%, #7a8570 35%, transparent 40%),
+    radial-gradient(ellipse 120px 80px at 80% 60%, #4a7c59 38%, transparent 43%),
+    radial-gradient(ellipse 180px 90px at 10% 70%, #5a6b5a 40%, transparent 45%),
+    radial-gradient(ellipse 100px 120px at 60% 80%, #4a7c59 35%, transparent 40%);
+}
+
+/* 実際の迷彩画像を使用する場合 */
+.camo-bg-image {
+  background-image: url('/img/camo-pattern.jpg');
+  background-size: 400px 400px;
+  background-repeat: repeat;
+  background-attachment: fixed;
+  /* ダークオーバーレイで軍事感を強化 */
+  background-blend-mode: multiply;
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+/* より現実的なアドベンチャー風パターン */
+.ape-camo-realistic {
+  background: 
+    /* ベース色：明るいアドベンチャーグリーン */
+    #4a5d4a,
+    /* 大きめの不規則パターン */
+    radial-gradient(ellipse 200px 120px at 15% 25%, #4a7c59 30%, transparent 35%),
+    radial-gradient(ellipse 180px 150px at 85% 15%, #7a8570 28%, transparent 33%),
+    radial-gradient(ellipse 160px 90px at 25% 75%, #4a7c59 32%, transparent 37%),
+    radial-gradient(ellipse 220px 100px at 70% 80%, #5a6b5a 29%, transparent 34%),
+    radial-gradient(ellipse 140px 180px at 90% 50%, #4a7c59 31%, transparent 36%),
+    /* 中サイズパターン */
+    radial-gradient(ellipse 80px 120px at 45% 30%, #4a5d4a 25%, transparent 30%),
+    radial-gradient(ellipse 100px 60px at 60% 65%, #5a6b5a 27%, transparent 32%);
+  background-size: 
+    100% 100%,
+    350px 350px,
+    320px 320px,
+    380px 380px,
+    360px 360px,
+    340px 340px,
+    180px 180px,
+    200px 200px;
+}
 
 /* iPhone最適化 */
 @supports (padding: max(0px)) {

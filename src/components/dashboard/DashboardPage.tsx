@@ -17,8 +17,7 @@ import {
   Plus,
   RefreshCw,
   Target,
-  Award,
-  Zap
+  Award
 } from 'lucide-react'
 
 interface DashboardPageProps {
@@ -196,8 +195,8 @@ export function DashboardPage({ onTabChange }: DashboardPageProps) {
       {/* クイックアクション */}
       <div className="bg-white rounded-lg shadow-lg p-6">
         <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-          <Zap className="h-5 w-5 text-yellow-600" />
-          ⚡ クイックアクション
+          <img src="/icons/icon-72x72.png" alt="軍資金管理" className="w-5 h-5" />
+          クイックアクション
         </h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <Button 

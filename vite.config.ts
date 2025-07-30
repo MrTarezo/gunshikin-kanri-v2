@@ -44,8 +44,7 @@ export default defineConfig({
             },
           },
         ],
-        // 認証関連のパターンをグローバルパターンから除外
-        dontCacheBustURLsMatching: /\.(js|css|html)$/,
+        // キャッシュバスティングを無効化しない（適切なバージョニングのため）
       },
       manifest: {
         name: 'GUNSHIKIN-KANRI-V2',
@@ -171,6 +170,10 @@ export default defineConfig({
     sourcemap: false,
     rollupOptions: {
       output: {
+        // より細かいファイル名ハッシュでキャッシュバスティングを強化
+        entryFileNames: 'assets/[name]-[hash].js',
+        chunkFileNames: 'assets/[name]-[hash].js',
+        assetFileNames: 'assets/[name]-[hash].[ext]',
         manualChunks: {
           vendor: ['react', 'react-dom'],
           aws: ['aws-amplify', '@aws-amplify/backend'],
