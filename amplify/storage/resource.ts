@@ -10,35 +10,35 @@ export const storage = defineStorage({
   
   // アクセス設定
   access: (allow) => ({
-    // レシート画像（軍資金管理用） - expenseId別管理
+    // 公開アセット（アプリアイコン等）
+    'public/*': [
+      allow.guest.to(['read']),
+      allow.authenticated.to(['read'])
+    ],
+    
+    // レシート画像（軍資金管理用）
     'receipts/*': [
       allow.authenticated.to(['read', 'write', 'delete'])
     ],
     
     // 食材画像（補給庫管理用）
-    'fridge-items/{user_id}/*': [
-      allow.authenticated.to(['read', 'write', 'delete'])
+    'fridge-items/{entity_id}/*': [
+      allow.entity('identity').to(['read', 'write', 'delete'])
     ],
     
     // 庫室撮影画像
-    'storage-photos/{user_id}/*': [
-      allow.authenticated.to(['read', 'write', 'delete'])
+    'storage-photos/{entity_id}/*': [
+      allow.entity('identity').to(['read', 'write', 'delete'])
     ],
     
     // ユーザープロフィール画像
-    'profile-pictures/{user_id}/*': [
-      allow.authenticated.to(['read', 'write', 'delete'])
-    ],
-    
-    // 公開アセット（アプリアイコン等）
-    'public/*': [
-      allow.guest.to(['read']),
-      allow.authenticated.to(['read']),
+    'profile-pictures/{entity_id}/*': [
+      allow.entity('identity').to(['read', 'write', 'delete'])
     ],
     
     // 一時アップロード領域
-    'tmp/{user_id}/*': [
-      allow.authenticated.to(['read', 'write', 'delete'])
-    ],
-  }),
+    'tmp/{entity_id}/*': [
+      allow.entity('identity').to(['read', 'write', 'delete'])
+    ]
+  })
 })
