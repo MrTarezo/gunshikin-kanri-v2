@@ -10,24 +10,24 @@ export const storage = defineStorage({
   
   // アクセス設定
   access: (allow) => ({
-    // レシート画像（軍資金管理用）
-    'receipts/{entity_id}/*': [
-      allow.entity('identity').to(['read', 'write', 'delete']),
+    // レシート画像（軍資金管理用） - expenseId別管理
+    'receipts/*': [
+      allow.authenticated.to(['read', 'write', 'delete'])
     ],
     
     // 食材画像（補給庫管理用）
-    'fridge-items/{entity_id}/*': [
-      allow.entity('identity').to(['read', 'write', 'delete']),
+    'fridge-items/{user_id}/*': [
+      allow.authenticated.to(['read', 'write', 'delete'])
     ],
     
     // 庫室撮影画像
-    'storage-photos/{entity_id}/*': [
-      allow.entity('identity').to(['read', 'write', 'delete']),
+    'storage-photos/{user_id}/*': [
+      allow.authenticated.to(['read', 'write', 'delete'])
     ],
     
     // ユーザープロフィール画像
-    'profile-pictures/{entity_id}/*': [
-      allow.entity('identity').to(['read', 'write', 'delete']),
+    'profile-pictures/{user_id}/*': [
+      allow.authenticated.to(['read', 'write', 'delete'])
     ],
     
     // 公開アセット（アプリアイコン等）
@@ -37,8 +37,8 @@ export const storage = defineStorage({
     ],
     
     // 一時アップロード領域
-    'tmp/{entity_id}/*': [
-      allow.entity('identity').to(['read', 'write', 'delete']),
+    'tmp/{user_id}/*': [
+      allow.authenticated.to(['read', 'write', 'delete'])
     ],
   }),
 })

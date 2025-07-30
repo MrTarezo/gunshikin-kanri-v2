@@ -1,6 +1,6 @@
 // src/components/expense/ExpenseListWithReceipt.tsx
 import { useState } from 'react'
-import { Trash2, Receipt, Eye, Edit } from 'lucide-react'
+import { Trash2, Receipt, Edit } from 'lucide-react'
 import { Button } from '../ui/button'
 import { ImageGallery } from '../common/ImageGallery'
 import { ExpenseEditForm } from './ExpenseEditForm'
@@ -53,19 +53,26 @@ export function ExpenseListWithReceipt({ expenses, onDelete, onUpdate, isLoading
     'その他': '❓',
   }
 
-  const getCategoryColor = (category: string) => {
+  // カテゴリ別の色設定（カード背景用）- 全て異なる色で識別しやすく
+  const getCategoryColor = (category: string, type?: string) => {
     const colors: Record<string, string> = {
-      '食費': 'bg-green-100 text-green-800',
-      '日用品': 'bg-blue-100 text-blue-800',
-      '交通費': 'bg-yellow-100 text-yellow-800',
-      '娯楽': 'bg-purple-100 text-purple-800',
-      '外食': 'bg-red-100 text-red-800',
-      '光熱費': 'bg-orange-100 text-orange-800',
-      '家賃': 'bg-indigo-100 text-indigo-800',
-      '収入': 'bg-green-100 text-green-800',
-      'その他': 'bg-gray-100 text-gray-800',
+      '食費': 'from-lime-50 to-lime-100 border-lime-200',        // 🍙 ライム（自然な食材）
+      '日用品': 'from-sky-50 to-sky-100 border-sky-200',         // 🧻 スカイブルー（清潔感）
+      '交通費': 'from-amber-50 to-amber-100 border-amber-200',   // 🚖 琥珀色（エネルギー）
+      '娯楽': 'from-violet-50 to-violet-100 border-violet-200',  // 🍿 バイオレット（楽しさ）
+      '外食': 'from-rose-50 to-rose-100 border-rose-200',       // 🍽️ ローズ（食欲）
+      '光熱費': 'from-orange-50 to-orange-100 border-orange-200', // 💡 オレンジ（暖かさ）
+      '家賃': 'from-slate-50 to-slate-100 border-slate-200',    // 🏠 スレート（安定）
+      '収入': 'from-teal-50 to-teal-100 border-teal-300',       // 💰 ティール（豊かさ）
+      'その他': 'from-neutral-50 to-neutral-100 border-neutral-200', // ❓ ニュートラル
     }
-    return colors[category] || 'bg-gray-100 text-gray-800'
+    
+    // 収入の場合は特別に金色系の豪華なスタイル
+    if (type === 'income') {
+      return 'from-yellow-100 to-amber-50 border-yellow-300 shadow-yellow-100/50'
+    }
+    
+    return colors[category] || 'from-neutral-50 to-neutral-100 border-neutral-200'
   }
 
   // 日付でグループ化
@@ -112,12 +119,18 @@ export function ExpenseListWithReceipt({ expenses, onDelete, onUpdate, isLoading
           <div className="space-y-2">
             {groupedExpenses[date].map((expense) => {
               const isExpanded = expandedExpense === expense.id
-              const hasReceipt = expense.receiptImages && expense.receiptImages.length > 0
+              const hasReceipt = (expense.receiptImages && expense.receiptImages.length > 0) || 
+                                ((expense as any).receiptUrls && (expense as any).receiptUrls.length > 0)
 
               return (
                 <div
                   key={expense.id}
-                  className="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition-shadow"
+                  className={`bg-gradient-to-br ${getCategoryColor(expense.category, expense.type)} rounded-lg border p-4 transition-all ${
+                    hasReceipt 
+                      ? 'hover:shadow-md hover:scale-[1.02] cursor-pointer' 
+                      : 'hover:shadow-sm'
+                  } ${expense.type === 'income' ? 'shadow-sm' : ''}`}
+                  onClick={() => hasReceipt && setExpandedExpense(isExpanded ? null : expense.id)}
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3 flex-1">
@@ -130,13 +143,10 @@ export function ExpenseListWithReceipt({ expenses, onDelete, onUpdate, isLoading
                           <h4 className="font-medium text-gray-900">
                             {expense.title}
                           </h4>
-                          <span className={`text-xs px-2 py-1 rounded-full ${getCategoryColor(expense.category)}`}>
-                            {expense.category}
-                          </span>
                           {hasReceipt && (
-                            <span className="text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-800 flex items-center gap-1">
+                            <span className="text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-800 flex items-center gap-1 select-none">
                               <Receipt className="h-3 w-3" />
-                              {expense.receipt!.length}枚
+                              {isExpanded && <span className="ml-1 text-blue-600">▼</span>}
                             </span>
                           )}
                         </div>
@@ -158,23 +168,14 @@ export function ExpenseListWithReceipt({ expenses, onDelete, onUpdate, isLoading
                       </div>
 
                       <div className="flex items-center gap-1">
-                        {hasReceipt && (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setExpandedExpense(isExpanded ? null : expense.id)}
-                            className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
-                            disabled={isLoading}
-                          >
-                            <Eye className="h-4 w-4" />
-                          </Button>
-                        )}
-                        
                         {onUpdate && (
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => setEditingExpense(expense)}
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              setEditingExpense(expense)
+                            }}
                             className="text-green-600 hover:text-green-700 hover:bg-green-50"
                             disabled={isLoading}
                           >
@@ -185,7 +186,10 @@ export function ExpenseListWithReceipt({ expenses, onDelete, onUpdate, isLoading
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => onDelete(expense.id)}
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            onDelete(expense.id)
+                          }}
                           className="text-red-600 hover:text-red-700 hover:bg-red-50"
                           disabled={isLoading}
                         >
@@ -198,11 +202,30 @@ export function ExpenseListWithReceipt({ expenses, onDelete, onUpdate, isLoading
                   {/* レシート画像表示 */}
                   {isExpanded && hasReceipt && (
                     <div className="mt-4 pt-4 border-t border-gray-200">
-                      <ImageGallery
-                        images={expense.receiptImages!}
-                        title="📸 レシート・領収書"
-                        emptyMessage="レシートがありません"
-                      />
+                      {expense.receiptImages ? (
+                        <ImageGallery
+                          images={expense.receiptImages}
+                          title="📸 レシート・領収書"
+                          emptyMessage="レシートがありません"
+                        />
+                      ) : (expense as any).receiptUrls ? (
+                        <div className="space-y-3">
+                          <h4 className="text-sm font-medium text-gray-900">📸 レシート・領収書 ({(expense as any).receiptUrls.length}枚)</h4>
+                          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                            {(expense as any).receiptUrls.map((url: string, index: number) => (
+                              <div key={index} className="relative group aspect-square bg-gray-100 rounded-lg overflow-hidden border border-gray-200 hover:shadow-md transition-all">
+                                <img
+                                  src={url}
+                                  alt={`レシート ${index + 1}`}
+                                  className="w-full h-full object-cover"
+                                  onClick={() => window.open(url, '_blank')}
+                                  style={{ cursor: 'pointer' }}
+                                />
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ) : null}
                     </div>
                   )}
                 </div>

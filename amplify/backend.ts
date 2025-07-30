@@ -14,8 +14,8 @@ export const backend = defineBackend({
   storage,
 })
 
-// カスタム設定
-const { cfnUserPool } = backend.auth.resources.cfnResources
+// カスタム設定と権限設定
+const { cfnUserPool, cfnUserPoolClient } = backend.auth.resources.cfnResources
 
 // Cognito User Pool の詳細設定
 if (cfnUserPool) {
@@ -40,7 +40,33 @@ if (cfnUserPool) {
   
   cfnUserPool.autoVerifiedAttributes = ['email']
   cfnUserPool.usernameAttributes = ['email']
+  
+  // CORS設定
+  cfnUserPool.deviceConfiguration = {
+    challengeRequiredOnNewDevice: false,
+    deviceOnlyRememberedOnUserPrompt: false,
+  }
 }
+
+// User Pool Client の設定
+if (cfnUserPoolClient) {
+  cfnUserPoolClient.tokenValidityUnits = {
+    accessToken: 'hours',
+    idToken: 'hours',
+    refreshToken: 'days',
+  }
+  
+  cfnUserPoolClient.accessTokenValidity = 24
+  cfnUserPoolClient.idTokenValidity = 24
+  cfnUserPoolClient.refreshTokenValidity = 30
+}
+
+// データアクセス権限の設定
+backend.data.resources.cfnResources.cfnGraphqlApi.additionalAuthenticationProviders = [
+  {
+    authenticationType: 'AWS_IAM',
+  },
+]
 
 // カスタムアウトプット
 backend.addOutput({

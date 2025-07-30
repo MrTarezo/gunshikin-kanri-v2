@@ -83,7 +83,9 @@ export function useExpenses() {
           new Date(b.date).getTime() - new Date(a.date).getTime()
         )
 
-        setExpenses(sortedExpenses as ExpenseData[])
+        // レシートURLを付与
+        const expensesWithUrls = await getExpensesWithReceiptUrls(sortedExpenses as ExpenseData[])
+        setExpenses(expensesWithUrls)
       }
     } catch (err: unknown) {
       console.error('支出データの取得に失敗:', err)
@@ -232,7 +234,9 @@ export function useExpenses() {
           receipt: receiptPaths.length > 0 ? JSON.stringify(receiptPaths) : ''
         } as ExpenseData
         
-        setExpenses(prev => [updatedExpense, ...prev])
+        // レシートURLを付与
+        const expenseWithUrls = await getExpensesWithReceiptUrls([updatedExpense])
+        setExpenses(prev => [expenseWithUrls[0], ...prev])
 
         return {
           success: true,

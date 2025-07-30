@@ -119,31 +119,40 @@ export function MainApp() {
 
       {/* メインコンテンツ */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* タブナビゲーション */}
+        {/* タブナビゲーション - アイコンのみ */}
         <nav className="mb-8">
-          <div className="flex space-x-1 bg-white rounded-lg p-1 shadow-sm">
-            {tabs.map((tab) => {
-              const Icon = tab.icon
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center space-x-2 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
-                    activeTab === tab.id
-                      ? 'bg-gray-900 text-white shadow-sm'
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                  }`}
-                >
-                  <div className="flex items-center gap-1">
-                    <Icon className={`h-4 w-4 ${activeTab === tab.id ? 'text-white' : tab.color}`} />
+          <div className="flex justify-center">
+            <div className="flex space-x-1 bg-white rounded-2xl p-2 shadow-lg border border-gray-200">
+              {tabs.map((tab) => {
+                const Icon = tab.icon
+                const isActive = activeTab === tab.id
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`relative flex items-center justify-center w-14 h-14 rounded-xl transition-all duration-300 ${
+                      isActive
+                        ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg transform scale-110'
+                        : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100 transform hover:scale-105'
+                    }`}
+                  >
+                    <Icon className={`h-6 w-6 ${isActive ? 'text-white' : tab.color}`} />
+                    
+                    {/* レシート撮影アイコン */}
                     {tab.id === 'expenses' && (
-                      <Camera className={`h-3 w-3 ${activeTab === tab.id ? 'text-blue-200' : 'text-blue-500'}`} />
+                      <Camera className={`absolute -top-1 -right-1 h-4 w-4 ${
+                        isActive ? 'text-blue-200' : 'text-blue-500'
+                      }`} />
                     )}
-                  </div>
-                  <span className="hidden sm:inline">{tab.label}</span>
-                </button>
-              )
-            })}
+                    
+                    {/* アクティブタブのドット */}
+                    {isActive && (
+                      <div className="absolute -bottom-1 w-2 h-2 bg-blue-400 rounded-full"></div>
+                    )}
+                  </button>
+                )
+              })}
+            </div>
           </div>
         </nav>
 
