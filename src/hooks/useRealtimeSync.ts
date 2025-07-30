@@ -21,13 +21,9 @@ interface SyncState {
  * GraphQL Subscriptions + Offline Queue
  */
 export function useRealtimeSync() {
-  // 開発モード強制時は useDevRealtimeSync を使用
-  if (useDevMode) {
-    console.log('🚀 開発モード: モックリアルタイム同期を使用')
-    return useDevRealtimeSync()
-  }
-
-  // 本番モード: 実際のGraphQL Subscriptions
+  // すべてのフックを最初に宣言（React Hooksのルール）
+  const devSyncResult = useDevRealtimeSync()
+  
   const [syncState, setSyncState] = useState<SyncState>({
     isConnected: false,
     lastSync: null,
@@ -38,32 +34,11 @@ export function useRealtimeSync() {
   const subscriptionsRef = useRef<unknown[]>([])
   const offlineQueueRef = useRef<unknown[]>([])
   
-  // オフラインキューの処理
-  useEffect(() => {
-    const processOfflineQueue = async () => {
-      setSyncState(prev => ({ ...prev, pendingChanges: offlineQueueRef.current.length }))
-    }
-    
-    const handleOnline = () => {
-      setSyncState(prev => ({ ...prev, isConnected: true }))
-      processOfflineQueue()
-    }
-    
-    const handleOffline = () => {
-      setSyncState(prev => ({ ...prev, isConnected: false }))
-    }
-    
-    window.addEventListener('online', handleOnline)
-    window.addEventListener('offline', handleOffline)
-    
-    // 初期状態設定
-    setSyncState(prev => ({ ...prev, isConnected: navigator.onLine }))
-    
-    return () => {
-      window.removeEventListener('online', handleOnline)
-      window.removeEventListener('offline', handleOffline)
-    }
-  }, [])
+  // 開発モード強制時は開発用の結果を返す
+  if (useDevMode) {
+    console.log('🚀 開発モード: モックリアルタイム同期を使用')
+    return devSyncResult
+  }
   
   const forceSync = useCallback(async () => {
     try {
@@ -123,6 +98,33 @@ export function useRealtimeSync() {
     } catch (error) {
       console.error('Subscriptionセットアップエラー:', error)
       setSyncState(prev => ({ ...prev, error: '同期のセットアップに失敗しました' }))
+    }
+  }, [])
+  
+  // オフラインキューの処理
+  useEffect(() => {
+    const processOfflineQueue = async () => {
+      setSyncState(prev => ({ ...prev, pendingChanges: offlineQueueRef.current.length }))
+    }
+    
+    const handleOnline = () => {
+      setSyncState(prev => ({ ...prev, isConnected: true }))
+      processOfflineQueue()
+    }
+    
+    const handleOffline = () => {
+      setSyncState(prev => ({ ...prev, isConnected: false }))
+    }
+    
+    window.addEventListener('online', handleOnline)
+    window.addEventListener('offline', handleOffline)
+    
+    // 初期状態設定
+    setSyncState(prev => ({ ...prev, isConnected: navigator.onLine }))
+    
+    return () => {
+      window.removeEventListener('online', handleOnline)
+      window.removeEventListener('offline', handleOffline)
     }
   }, [])
   

@@ -2,7 +2,6 @@
 import { useRealtimeSync } from '../../hooks/useRealtimeSync'
 import { Button } from '../ui/button'
 import { 
-  Wifi, 
   WifiOff, 
   RefreshCw, 
   CheckCircle, 

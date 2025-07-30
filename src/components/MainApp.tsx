@@ -13,7 +13,6 @@ import { FridgePage } from './fridge/FridgePage'
 import { DashboardPage } from './dashboard/DashboardPage'
 
 // UI Components
-import { Button } from './ui/button'
 import { SyncIndicator } from './common/SyncIndicator'
 
 // Icons

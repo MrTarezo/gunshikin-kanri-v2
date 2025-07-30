@@ -48,7 +48,7 @@ export function DashboardPage({ onTabChange }: DashboardPageProps) {
         // 実際のデータ取得処理がここに入る
       ])
       toast.success('データを更新しました', '最新の情報に同期完了')
-    } catch (error) {
+    } catch {
       toast.error('更新に失敗しました', 'ネットワーク接続を確認してください')
     } finally {
       setRefreshing(false)
