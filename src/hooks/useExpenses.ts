@@ -4,6 +4,7 @@ import { generateClient } from 'aws-amplify/data'
 import { uploadData, getUrl, remove } from 'aws-amplify/storage'
 import type { Schema } from '../../amplify/data/resource'
 import { useDevExpenses } from './dev/useDevData'
+import { v4 as uuidv4 } from 'uuid'
 
 const client = generateClient<Schema>()
 
@@ -117,9 +118,14 @@ export function useExpenses() {
       const uploadPromises = images.map(async (image, index) => {
         try {
           const fileExtension = image.file.name.split('.').pop() || 'jpg'
-          const fileName = `receipts/${_expenseId}/${Date.now()}_${index}.${fileExtension}`
+          // UUID7ベースの安全なファイル名を生成
+          const uniqueId = uuidv4()
+          const fileName = `receipts/${_expenseId}/${uniqueId}_${index}.${fileExtension}`
           
           const fileToUpload = image.compressed || image.file
+
+          // Base64エンコードで日本語ファイル名を安全に保存
+          const originalNameBase64 = btoa(unescape(encodeURIComponent(image.file.name)))
 
           const { path } = await uploadData({
             path: fileName,
@@ -127,7 +133,7 @@ export function useExpenses() {
             options: {
               contentType: fileToUpload.type,
               metadata: {
-                originalName: encodeURIComponent(image.file.name),
+                originalName: originalNameBase64, // Base64エンコードで安全に保存
                 uploadedAt: new Date().toISOString(),
                 expenseId: _expenseId,
                 fileSize: fileToUpload.size.toString(),
