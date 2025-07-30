@@ -15,6 +15,7 @@ export function ExpensePageWithReceipt() {
     isLoading, 
     error, 
     addExpense, 
+    updateExpense,
     deleteExpense, 
     fetchExpenses,
     getExpenseStats,
@@ -281,6 +282,8 @@ export function ExpensePageWithReceipt() {
         <ExpenseListWithReceipt 
           expenses={filteredExpenses as any[]} 
           onDelete={handleDeleteExpense}
+          onUpdate={updateExpense}
+          isLoading={isLoading}
         />
       </div>
 

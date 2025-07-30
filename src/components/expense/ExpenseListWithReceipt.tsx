@@ -1,8 +1,9 @@
 // src/components/expense/ExpenseListWithReceipt.tsx
 import { useState } from 'react'
-import { Trash2, Receipt, Eye } from 'lucide-react'
+import { Trash2, Receipt, Eye, Edit } from 'lucide-react'
 import { Button } from '../ui/button'
 import { ImageGallery } from '../common/ImageGallery'
+import { ExpenseEditForm } from './ExpenseEditForm'
 
 interface ImageData {
   id: string
@@ -21,16 +22,24 @@ interface ExpenseData {
   type: 'income' | 'expense'
   date: string
   paidBy: string
-  receipt?: ImageData[]
+  comment?: string
+  settled: boolean
+  receipt?: string
+  createdAt?: string
+  updatedAt?: string
+  receiptImages?: ImageData[] // 表示用
 }
 
 interface ExpenseListWithReceiptProps {
   expenses: ExpenseData[]
   onDelete: (id: string) => void
+  onUpdate?: (id: string, data: Partial<ExpenseData>) => Promise<{ success: boolean; message: string }>
+  isLoading?: boolean
 }
 
-export function ExpenseListWithReceipt({ expenses, onDelete }: ExpenseListWithReceiptProps) {
+export function ExpenseListWithReceipt({ expenses, onDelete, onUpdate, isLoading = false }: ExpenseListWithReceiptProps) {
   const [expandedExpense, setExpandedExpense] = useState<string | null>(null)
+  const [editingExpense, setEditingExpense] = useState<ExpenseData | null>(null)
 
   const categoryIcons: Record<string, string> = {
     '食費': '🍙',
@@ -103,7 +112,7 @@ export function ExpenseListWithReceipt({ expenses, onDelete }: ExpenseListWithRe
           <div className="space-y-2">
             {groupedExpenses[date].map((expense) => {
               const isExpanded = expandedExpense === expense.id
-              const hasReceipt = expense.receipt && expense.receipt.length > 0
+              const hasReceipt = expense.receiptImages && expense.receiptImages.length > 0
 
               return (
                 <div
@@ -155,8 +164,21 @@ export function ExpenseListWithReceipt({ expenses, onDelete }: ExpenseListWithRe
                             size="sm"
                             onClick={() => setExpandedExpense(isExpanded ? null : expense.id)}
                             className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                            disabled={isLoading}
                           >
                             <Eye className="h-4 w-4" />
+                          </Button>
+                        )}
+                        
+                        {onUpdate && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setEditingExpense(expense)}
+                            className="text-green-600 hover:text-green-700 hover:bg-green-50"
+                            disabled={isLoading}
+                          >
+                            <Edit className="h-4 w-4" />
                           </Button>
                         )}
                         
@@ -165,6 +187,7 @@ export function ExpenseListWithReceipt({ expenses, onDelete }: ExpenseListWithRe
                           size="sm"
                           onClick={() => onDelete(expense.id)}
                           className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                          disabled={isLoading}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -176,7 +199,7 @@ export function ExpenseListWithReceipt({ expenses, onDelete }: ExpenseListWithRe
                   {isExpanded && hasReceipt && (
                     <div className="mt-4 pt-4 border-t border-gray-200">
                       <ImageGallery
-                        images={expense.receipt!}
+                        images={expense.receiptImages!}
                         title="📸 レシート・領収書"
                         emptyMessage="レシートがありません"
                       />
@@ -188,6 +211,16 @@ export function ExpenseListWithReceipt({ expenses, onDelete }: ExpenseListWithRe
           </div>
         </div>
       ))}
+
+      {/* 編集フォーム */}
+      {editingExpense && onUpdate && (
+        <ExpenseEditForm
+          expense={editingExpense}
+          onSave={onUpdate}
+          onCancel={() => setEditingExpense(null)}
+          isLoading={isLoading}
+        />
+      )}
     </div>
   )
 }

@@ -39,6 +39,7 @@ interface ExpenseFormData {
   type: 'income' | 'expense'
   date: string
   paidBy: string
+  comment?: string
   receipt?: ImageData[]
 }
 
@@ -126,9 +127,11 @@ export function useExpenses() {
             options: {
               contentType: fileToUpload.type,
               metadata: {
-                originalName: image.file.name,
+                originalName: encodeURIComponent(image.file.name),
                 uploadedAt: new Date().toISOString(),
                 expenseId: _expenseId,
+                fileSize: fileToUpload.size.toString(),
+                uploadIndex: index.toString(),
               }
             }
           }).result
@@ -300,6 +303,78 @@ export function useExpenses() {
     }
   }
 
+  // 支出更新関数
+  const updateExpense = async (id: string, expenseData: Partial<Omit<ExpenseData, 'receipt' | 'receiptImages'>>) => {
+    try {
+      setError(null)
+
+      if (useDevMode) {
+        // 開発モード：モックデータを更新
+        const currentExpense = expenses.find(exp => exp.id === id)
+        if (!currentExpense) {
+          throw new Error('更新対象の支出が見つかりません')
+        }
+
+        const updatedExpense: ExpenseData = {
+          ...currentExpense,
+          ...expenseData,
+          updatedAt: new Date().toISOString(),
+          // receiptは変更しない（既存の値を保持）
+          receipt: currentExpense.receipt
+        }
+
+        setExpenses(prev => prev.map(exp => exp.id === id ? updatedExpense : exp))
+        
+        return {
+          success: true,
+          data: updatedExpense,
+          message: '支出を更新しました'
+        }
+      } else {
+        // 本番モード：DynamoDB更新
+        const updateData: any = {
+          id,
+          updatedAt: new Date().toISOString()
+        }
+
+        // 更新データをコピー（receiptは除く）
+        if (expenseData.title !== undefined) updateData.title = expenseData.title
+        if (expenseData.amount !== undefined) updateData.amount = expenseData.amount
+        if (expenseData.category !== undefined) updateData.category = expenseData.category
+        if (expenseData.type !== undefined) updateData.type = expenseData.type
+        if (expenseData.date !== undefined) updateData.date = expenseData.date
+        if (expenseData.paidBy !== undefined) updateData.paidBy = expenseData.paidBy
+        if ('comment' in expenseData) updateData.comment = expenseData.comment
+
+        const { data: updatedExpense, errors } = await client.models.Expense.update(updateData, {
+          authMode: 'userPool'
+        })
+
+        if (errors && errors.length > 0) {
+          console.error('💰 更新エラー:', errors)
+          throw new Error(`GraphQL errors: ${errors.map(e => e.message).join(', ')}`)
+        }
+
+        if (!updatedExpense) {
+          throw new Error('支出の更新に失敗しました')
+        }
+
+        setExpenses(prev => prev.map(exp => exp.id === id ? updatedExpense as ExpenseData : exp))
+
+        return {
+          success: true,
+          data: updatedExpense as ExpenseData,
+          message: '支出を更新しました'
+        }
+      }
+    } catch (err: unknown) {
+      console.error('支出の更新に失敗:', err)
+      const message = err instanceof Error ? err.message : '支出の更新に失敗しました'
+      setError(message)
+      return { success: false, message }
+    }
+  }
+
   // レシート画像URLの取得
   const getReceiptUrls = async (receiptPaths: string[]): Promise<string[]> => {
     if (useDevMode) {
@@ -394,6 +469,7 @@ export function useExpenses() {
     isLoading,
     error,
     addExpense,
+    updateExpense,
     deleteExpense,
     fetchExpenses,
     getExpensesWithReceiptUrls,

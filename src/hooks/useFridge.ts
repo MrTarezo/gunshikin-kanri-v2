@@ -126,9 +126,10 @@ export function useFridge() {
           options: {
             contentType: fileToUpload.type,
             metadata: {
-              originalName: image.file.name,
+              originalName: encodeURIComponent(image.file.name),
               uploadedAt: new Date().toISOString(),
               itemId: itemId,
+              fileSize: fileToUpload.size.toString(),
             }
           }
         }).result
