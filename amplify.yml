@@ -4,21 +4,8 @@ frontend:
     preBuild:
       commands:
         - npm ci
-        # amplify_outputs.jsonを生成（バックエンドから取得）
-        - npx ampx generate outputs --branch $AWS_BRANCH --app-id $AWS_APP_ID
     build:
       commands:
-        # 生成されたamplify_outputs.jsonをpublicディレクトリにコピー
-        - |
-          if [ -f amplify_outputs.json ]; then
-            echo "✅ amplify_outputs.json found"
-            cp amplify_outputs.json ./public/amplify_outputs.json
-            echo "📄 Content preview:"
-            cat amplify_outputs.json | head -10
-          else
-            echo "❌ amplify_outputs.json not found after generation"
-            ls -la
-          fi
         - npm run build
   artifacts:
     baseDirectory: dist

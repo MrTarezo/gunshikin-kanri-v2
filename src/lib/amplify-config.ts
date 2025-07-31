@@ -13,17 +13,30 @@ export async function configureAmplify() {
       outputs = await import('../../amplify_outputs.json')
     } catch (error) {
       console.warn('⚠️ amplify_outputs.jsonが見つかりません。開発モードで継続します。')
-      return null
+      // プレースホルダー設定を使用
+      try {
+        const response = await fetch('/amplify_outputs.json')
+        outputs = await response.json()
+      } catch {
+        return null
+      }
     }
   } else {
     console.log('🌟 本番モード: Amplify設定を使用')
-    // 本番環境では動的にロード
-    try {
-      const response = await fetch('/amplify_outputs.json')
-      outputs = await response.json()
-    } catch (error) {
-      console.error('❌ amplify_outputs.jsonの読み込みに失敗:', error)
-      return null
+    
+    // Amplify Gen2では、ビルド時に環境変数として設定が提供される
+    if (typeof window !== 'undefined' && (window as any).amplifyConfig) {
+      console.log('✅ Amplify設定が環境変数から見つかりました')
+      outputs = (window as any).amplifyConfig
+    } else {
+      // フォールバック: publicディレクトリから読み込み
+      try {
+        const response = await fetch('/amplify_outputs.json')
+        outputs = await response.json()
+      } catch (error) {
+        console.error('❌ amplify_outputs.jsonの読み込みに失敗:', error)
+        return null
+      }
     }
   }
 
