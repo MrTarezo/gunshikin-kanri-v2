@@ -3,6 +3,10 @@ frontend:
   phases:
     preBuild:
       commands:
+        # Node.jsバージョンを20に設定
+        - nvm use 20
+        - node -v
+        - npm -v
         - npm ci
     build:
       commands:
