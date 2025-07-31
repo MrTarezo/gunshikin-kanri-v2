@@ -1,7 +1,7 @@
 // src/App.tsx (Amplify統合版)
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import './App.css'
-import './lib/amplify-config' // Amplify設定を初期化
+import { configureAmplify } from './lib/amplify-config' // Amplify設定関数
 
 // Context Providers
 import { ToastProvider } from './contexts/ToastContext'
@@ -18,6 +18,14 @@ import { OfflineIndicator } from './components/common/OfflineIndicator'
 import { useRealtimeSync } from './hooks/useRealtimeSync'
 
 function App() {
+  const [isAmplifyConfigured, setIsAmplifyConfigured] = useState(false)
+
+  useEffect(() => {
+    configureAmplify().then((result) => {
+      setIsAmplifyConfigured(!!result)
+    })
+  }, [])
+
   return (
     <ToastProvider>
       <AuthWrapper>
