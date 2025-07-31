@@ -10,7 +10,25 @@ frontend:
         - npm ci
     build:
       commands:
+        # amplify_outputs.jsonを探して配置
+        - |
+          echo "🔍 Searching for amplify_outputs.json..."
+          find . -name "amplify_outputs.json" -type f 2>/dev/null | head -10
+          if [ -f "../.amplify-hosting/static/amplify_outputs.json" ]; then
+            echo "✅ Found in .amplify-hosting/static"
+            cp "../.amplify-hosting/static/amplify_outputs.json" ./public/
+          elif [ -f "amplify_outputs.json" ]; then
+            echo "✅ Found in current directory"
+            cp amplify_outputs.json ./public/
+          fi
+          ls -la ./public/amplify_outputs.json || echo "⚠️ amplify_outputs.json not found in public"
         - npm run build
+        # ビルド後にもう一度確認
+        - |
+          if [ -f "./public/amplify_outputs.json" ]; then
+            cp ./public/amplify_outputs.json ./dist/
+            echo "✅ Copied amplify_outputs.json to dist"
+          fi
   artifacts:
     baseDirectory: dist
     files:
