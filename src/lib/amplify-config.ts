@@ -24,19 +24,14 @@ export async function configureAmplify() {
   } else {
     console.log('🌟 本番モード: Amplify設定を使用')
     
-    // Amplify Gen2では、ビルド時に環境変数として設定が提供される
-    if (typeof window !== 'undefined' && (window as any).amplifyConfig) {
-      console.log('✅ Amplify設定が環境変数から見つかりました')
-      outputs = (window as any).amplifyConfig
-    } else {
-      // フォールバック: publicディレクトリから読み込み
-      try {
-        const response = await fetch('/amplify_outputs.json')
-        outputs = await response.json()
-      } catch (error) {
-        console.error('❌ amplify_outputs.jsonの読み込みに失敗:', error)
-        return null
-      }
+    // JSONファイルから直接読み込み
+    try {
+      const response = await fetch('/amplify_outputs.json')
+      outputs = await response.json()
+      console.log('✅ amplify_outputs.jsonを読み込みました')
+    } catch (error) {
+      console.error('❌ amplify_outputs.jsonの読み込みに失敗:', error)
+      return null
     }
   }
 
