@@ -3,31 +3,16 @@ backend:
   phases:
     build:
       commands:
-        # Node.js 20を使用
-        - nvm use 20
-        - npm ci --cache .npm --prefer-offline
-        - npx ampx pipeline-deploy --branch $AWS_BRANCH --app-id $AWS_APP_ID --outputs-version "1.2"
+        - npm ci
 frontend:
   phases:
     preBuild:
       commands:
-        # Node.jsバージョンを20に設定
         - nvm use 20
-        - node -v
-        - npm -v
         - npm ci
     build:
       commands:
-        # ビルド実行
         - npm run build
-        # amplify_outputs.jsonをdistにコピー（存在する場合）
-        - |
-          if [ -f "amplify_outputs.json" ]; then
-            cp amplify_outputs.json ./dist/
-            echo "✅ Copied amplify_outputs.json to dist"
-          else
-            echo "⚠️ amplify_outputs.json not found"
-          fi
   artifacts:
     baseDirectory: dist
     files:
@@ -35,4 +20,3 @@ frontend:
   cache:
     paths:
       - node_modules/**/*
-      - .npm/**/*
